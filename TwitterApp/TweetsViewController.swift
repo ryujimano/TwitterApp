@@ -8,12 +8,27 @@
 
 import UIKit
 
-class TweetsViewController: UIViewController {
+class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    @IBOutlet weak var tableView: UITableView!
+    
+    var tweets: [Tweet] = []
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        TwitterClient.sharedInstance?.getHomeTimeLine(success: { (tweets) in
+            self.tweets = tweets
+            self.tableView.reloadData()
+        }, failure: { (error) in
+            print(error.localizedDescription)
+        })
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        tableView.delegate = self
+        tableView.dataSource = self
     }
 
     override func didReceiveMemoryWarning() {
@@ -21,6 +36,21 @@ class TweetsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    
+    //MARK: - TableView
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return tweets.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath)
+        
+        let tweet = tweets[indexPath.row]
+        
+        cell.textLabel?.text = tweet.text
+        
+        return cell
+    }
 
     /*
     // MARK: - Navigation
