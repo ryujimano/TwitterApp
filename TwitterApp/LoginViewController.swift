@@ -33,9 +33,12 @@ class LoginViewController: UIViewController {
         let twitterClient = TwitterClient.sharedInstance
         
         twitterClient?.login(success: { 
-            <#code#>
+            self.performSegue(withIdentifier: "loginSegue", sender: nil)
         }, failure: { (error) in
-            <#code#>
+            let alert = UIAlertController(title: "An Error Occurred", message: error.localizedDescription, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Ok", style: .default, handler: nil)
+            alert.addAction(action)
+            self.show(alert, sender: nil)
         })
     }
     

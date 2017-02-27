@@ -13,16 +13,32 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     static let sharedInstance = TwitterClient(baseURL: URL(string: "https://api.twitter.com"), consumerKey: "0NiZmAW2LWNuyX52CqRFS0AJB", consumerSecret: "Tot6xw2aqGZeXeGuafbjYuZZyyQWDK0aBV2JI03vlt1RxQMPRw")
     
+    var loginSuccess: (() -> ())?
+    var loginFailure: ((Error) -> ())?
     
     
-    func login(success: () -> (), failure: (Error)->()) {
+    
+    func login(success: @escaping () -> (), failure: @escaping (Error)->()) {
+        loginSuccess = success
+        loginFailure = failure
+        
         TwitterClient.sharedInstance?.deauthorize()
         TwitterClient.sharedInstance?.fetchRequestToken(withPath: "oauth/request_token", method: "GET", callbackURL: URL(string: "twitterapp://oauth"), scope: nil, success: { (requestToken) in
             let url = URL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken?.token ?? "")")
             UIApplication.shared.open(url!, options: [:], completionHandler: nil)
-            success()
         }, failure: { (error) in
-            failure(error)
+            self.loginFailure?(error!)
+        })
+    }
+    
+    func handleOpenURL(url: URL) {
+        let requestToken = BDBOAuth1Credential(queryString: url.query)
+        fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken) in
+            
+            self.loginSuccess?()
+            
+        }, failure: { (error) in
+            self.loginFailure?(error!)
         })
     }
     
