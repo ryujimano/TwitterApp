@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import BDBOAuth1Manager
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -42,6 +43,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        
+        let requestToken = BDBOAuth1Credential(queryString: url.query)
+        let twitterClient = TwitterClient.sharedInstance
+        
+        twitterClient?.fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken) in
+            
+            twitterClient?.getHomeTimeLine(success: { (tweets) in
+                <#code#>
+            }, failure: { (error) in
+                <#code#>
+            })
+            
+            twitterClient?.getCurrentAccount(success: { (user) in
+                <#code#>
+            }, failure: { (error) in
+                <#code#>
+            })
+            
+        }, failure: { (error) in
+            print("\(error?.localizedDescription)")
+        })
+        
+        return true
     }
 
     // MARK: - Core Data stack
