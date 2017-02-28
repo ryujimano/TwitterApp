@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AFNetworking
 
 class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
@@ -29,6 +30,20 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
         tableView.delegate = self
         tableView.dataSource = self
+        
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 320
+        
+        navigationController?.navigationBar.barTintColor = .white
+        
+        let rect = CGRect(x: 0, y: 0, width: 45, height: 45)
+        UIGraphicsBeginImageContext(rect.size)
+        #imageLiteral(resourceName: "Twitter_Logo_Blue").draw(in: rect)
+        let twitterImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        let twitterView = UIImageView(image: twitterImage)
+        navigationItem.titleView = twitterView
     }
 
     override func didReceiveMemoryWarning() {
@@ -43,11 +58,43 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath) as! TweetTableViewCell
         
         let tweet = tweets[indexPath.row]
         
-        cell.textLabel?.text = tweet.text
+        cell.nameLabel.text = tweet.name
+        if let image = tweet.profileImage {
+            cell.profileView.setImageWith(image)
+        }
+        cell.handleLabel.text = tweet.screenName
+        cell.tweetLabel.text = tweet.text
+        
+        if let image = tweet.tweetImage {
+            cell.first?.isHidden = false
+            cell.tweetImageView.setImageWith(image)
+        }
+        else {
+            cell.first?.isHidden = true
+        }
+        
+        if let caption = tweet.caption {
+            cell.second?.isHidden = false
+            cell.descriptionLabel.text = caption
+        }
+        else {
+            cell.second?.isHidden = true
+        }
+        
+        if let link = tweet.link {
+            cell.third?.isHidden = false
+            cell.linkButton.titleLabel?.text = link
+        }
+        else {
+            cell.third?.isHidden = true
+        }
+        
+        cell.retweetCountLabel.text = "\(tweet.retweetCount)"
+        cell.favoriteCountLabel.text = "\(tweet.favoritesCount)"
         
         return cell
     }
