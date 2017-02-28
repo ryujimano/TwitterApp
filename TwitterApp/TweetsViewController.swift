@@ -62,6 +62,8 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let tweet = tweets[indexPath.row]
         
+        print(tweet.text)
+        
         cell.nameLabel.text = tweet.name
         if let image = tweet.profileImage {
             cell.profileView.setImageWith(image)
@@ -95,6 +97,21 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         cell.retweetCountLabel.text = "\(tweet.retweetCount)"
         cell.favoriteCountLabel.text = "\(tweet.favoritesCount)"
+        
+        let secondsBetween = Int(Date().timeIntervalSince(tweet.timestamp!))
+        
+        if secondsBetween < 60 {
+            cell.dateLabel.text = "・1m"
+        }
+        else if secondsBetween < 3600 {
+            cell.dateLabel.text = "・\(secondsBetween / 60)m"
+        }
+        else if secondsBetween < 86400 {
+            cell.dateLabel.text = "・\(secondsBetween / 3600)h"
+        }
+        else {
+            cell.dateLabel.text = "・\(secondsBetween / 86400)d"
+        }
         
         return cell
     }
