@@ -56,8 +56,8 @@ class TwitterClient: BDBOAuth1SessionManager {
         })
     }
     
-    func getHomeTimeLine(success: @escaping ([Tweet]) -> (), failure: @escaping (Error) -> ()) {
-        get("1.1/statuses/home_timeline.json", parameters: nil, progress: nil, success: { (_, response) in
+    func getHomeTimeLine(count: Int, success: @escaping ([Tweet]) -> (), failure: @escaping (Error) -> ()) {
+        get("1.1/statuses/home_timeline.json?count=\(count)", parameters: nil, progress: nil, success: { (_, response) in
             let dictionaries = response as! [NSDictionary]
             let tweets = Tweet.tweetsFromDictionary(dictionaries: dictionaries)
             success(tweets)
@@ -74,6 +74,46 @@ class TwitterClient: BDBOAuth1SessionManager {
         }, failure: { (task, error) in
             failure(error)
         })
+    }
+    
+    func retweet(id: String, success: @escaping (Tweet) -> (), failure: @escaping (Error) -> ()) {
+        post("1.1/statuses/retweet/\(id).json", parameters: nil, progress: nil, success: { (task, response) in
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet(dictionary: dictionary)
+            success(tweet)
+        }) { (task, error) in
+            failure(error)
+        }
+    }
+    
+    func unretweet(id: String, success: @escaping (Tweet) -> (), failure: @escaping (Error) -> ()) {
+        post("1.1/statuses/unretweet/\(id).json", parameters: nil, progress: nil, success: { (task, response) in
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet(dictionary: dictionary)
+            success(tweet)
+        }) { (task, error) in
+            failure(error)
+        }
+    }
+    
+    func favorite(id: String, success: @escaping (Tweet) ->(), failure: @escaping (Error) -> ()) {
+        post("1.1/favorites/create.json?id=\(id)", parameters: nil, progress: nil, success: { (task, response) in
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet(dictionary: dictionary)
+            success(tweet)
+        }) { (task, error) in
+            failure(error)
+        }
+    }
+    
+    func unfavorite(id: String, success: @escaping (Tweet) ->(), failure: @escaping (Error) -> ()) {
+        post("1.1/favorites/destroy.json?id=\(id)", parameters: nil, progress: nil, success: { (task, response) in
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet(dictionary: dictionary)
+            success(tweet)
+        }) { (task, error) in
+            failure(error)
+        }
     }
 
 }

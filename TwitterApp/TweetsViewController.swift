@@ -8,16 +8,19 @@
 
 import UIKit
 import AFNetworking
+import MBProgressHUD
 
 class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
     
     var tweets: [Tweet] = []
+    var count = 20
+    var isMoreDataLoading = false
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        TwitterClient.sharedInstance?.getHomeTimeLine(success: { (tweets) in
+        TwitterClient.sharedInstance?.getHomeTimeLine(count: count, success: { (tweets) in
             self.tweets = tweets
             self.tableView.reloadData()
         }, failure: { (error) in
@@ -44,11 +47,26 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let twitterView = UIImageView(image: twitterImage)
         navigationItem.titleView = twitterView
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(self.refresh(refreshControl:)), for: .valueChanged)
+        tableView.insertSubview(refreshControl, at: 0)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func refresh(refreshControl:UIRefreshControl) {
+        count = 20
+        TwitterClient.sharedInstance?.getHomeTimeLine(count: count, success: { (tweets) in
+            self.tweets = tweets
+            self.tableView.reloadData()
+            refreshControl.endRefreshing()
+        }, failure: { (error) in
+            print(error.localizedDescription)
+        })
     }
     
     
@@ -62,14 +80,41 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         let tweet = tweets[indexPath.row]
         
-        print(tweet.text)
+    
+        cell.tweet = tweet
+        
+        cell.retweetCountLabel.text = "\(tweet.retweetCount)"
+        cell.favoriteCountLabel.text = "\(tweet.favoritesCount)"
+        
+        if tweet.retweeted {
+            cell.retweetButton.imageView?.tintColor = .green
+        }
+        else {
+            cell.retweetButton.imageView?.tintColor = .lightGray
+        }
+        
+        if tweet.favorited {
+            cell.favoriteButton.imageView?.tintColor = .red
+        }
+        else {
+            cell.favoriteButton.imageView?.tintColor = .lightGray
+        }
+        
+        
+        cell.link = tweet.link
+        
+        cell.stackView.layer.borderWidth = 1
+        cell.stackView.layer.borderColor = UIColor.lightGray.cgColor
+//        let regex = try! NSRegularExpression(pattern: "http\\S+",options: [])
+//        let range = NSMakeRange(0, tweet.text?.characters.count ?? 0)
+//        let text = regex.stringByReplacingMatches(in: tweet.text ?? "", options: [], range: range, withTemplate: "")
+        cell.tweetLabel.text = tweet.text
         
         cell.nameLabel.text = tweet.name
         if let image = tweet.profileImage {
             cell.profileView.setImageWith(image)
         }
-        cell.handleLabel.text = tweet.screenName
-        cell.tweetLabel.text = tweet.text
+        cell.handleLabel.text = "@\(tweet.screenName!)"
         
         if let image = tweet.tweetImage {
             cell.first?.isHidden = false
@@ -87,16 +132,14 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             cell.second?.isHidden = true
         }
         
-        if let link = tweet.link {
+        if let link = tweet.displayLink {
             cell.third?.isHidden = false
-            cell.linkButton.titleLabel?.text = link
+            cell.linkButton.setTitle(link, for: .normal)
         }
         else {
             cell.third?.isHidden = true
         }
         
-        cell.retweetCountLabel.text = "\(tweet.retweetCount)"
-        cell.favoriteCountLabel.text = "\(tweet.favoritesCount)"
         
         let secondsBetween = Int(Date().timeIntervalSince(tweet.timestamp!))
         
@@ -115,9 +158,40 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         return cell
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (!isMoreDataLoading) {
+            // Calculate the position of one screen length before the bottom of the results
+            let scrollViewContentHeight = tableView.contentSize.height
+            let scrollOffsetThreshold = scrollViewContentHeight - tableView.bounds.size.height
+            
+            // When the user has scrolled past the threshold, start requesting
+            if(scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging) {
+                isMoreDataLoading = true
+                MBProgressHUD.showAdded(to: self.view, animated: true)
+                if count < 200 {
+                    count += 20
+                }
+                TwitterClient.sharedInstance?.getHomeTimeLine(count: count, success: { (tweets) in
+                    self.tweets = tweets
+                    self.tableView.reloadData()
+                    MBProgressHUD.hide(for: self.view, animated: true)
+                    self.isMoreDataLoading = false
+                }, failure: { (error) in
+                    print(error.localizedDescription)
+                })
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
 
     @IBAction func onLogout(_ sender: Any) {
         TwitterClient.sharedInstance?.logout()
+        
     }
     
     /*

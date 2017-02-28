@@ -19,7 +19,11 @@ class Tweet: NSObject {
     var profileImage: URL?
     var tweetImage: URL?
     var caption: String?
-    var link: String?
+    var link: URL?
+    var displayLink: String?
+    var id: String?
+    var retweeted: Bool = false
+    var favorited: Bool = false
     
     init(dictionary: NSDictionary) {
         text = dictionary["text"] as? String
@@ -56,10 +60,17 @@ class Tweet: NSObject {
                     url = urls[0]
                 }
                 if let linkString = url?["url"] as? String {
-                    link = linkString
+                    link = URL(string: linkString)
+                }
+                if let linkString = url?["display_url"] as? String {
+                    displayLink = linkString
                 }
             }
         }
+        
+        id = dictionary["id_str"] as? String
+        retweeted = dictionary["retweeted"] as! Bool
+        favorited = dictionary["favorited"] as! Bool
     }
     
     class func tweetsFromDictionary(dictionaries: [NSDictionary]) -> [Tweet] {
