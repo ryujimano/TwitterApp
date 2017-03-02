@@ -156,9 +156,6 @@
                                                         <constraint firstAttribute="width" constant="20" id="umy-vA-Zdm"/>
                                                     </constraints>
                                                     <state key="normal" image="iconmonstr-retweet-1-240"/>
-                                                    <connections>
-                                                        <action selector="onRetweet:" destination="M34-Nx-ocD" eventType="touchUpInside" id="mDo-9S-K9U"/>
-                                                    </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VZW-fN-Drp">
                                                     <rect key="frame" x="206" y="291.5" width="20" height="20"/>
@@ -167,9 +164,6 @@
                                                         <constraint firstAttribute="width" constant="20" id="f0r-JP-SmY"/>
                                                     </constraints>
                                                     <state key="normal" image="iconmonstr-favorite-1-240"/>
-                                                    <connections>
-                                                        <action selector="onFavorite:" destination="M34-Nx-ocD" eventType="touchUpInside" id="tvf-b0-FOb"/>
-                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="count" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fCq-UX-Pl6">
                                                     <rect key="frame" x="99" y="292.5" width="35.5" height="19.5"/>

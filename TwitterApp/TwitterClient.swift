@@ -89,6 +89,7 @@ class TwitterClient: BDBOAuth1SessionManager {
     func unretweet(id: String, success: @escaping (Tweet) -> (), failure: @escaping (Error) -> ()) {
         post("1.1/statuses/unretweet/\(id).json", parameters: nil, progress: nil, success: { (task, response) in
             let dictionary = response as! NSDictionary
+            print(dictionary)
             let tweet = Tweet(dictionary: dictionary)
             success(tweet)
         }) { (task, error) in

@@ -38,6 +38,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.estimatedRowHeight = 320
         
         navigationController?.navigationBar.barTintColor = .white
+        navigationController?.navigationBar.backgroundColor = .white
         
         let rect = CGRect(x: 0, y: 0, width: 45, height: 45)
         UIGraphicsBeginImageContext(rect.size)
@@ -99,6 +100,12 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         else {
             cell.favoriteButton.imageView?.tintColor = .lightGray
         }
+        
+        cell.retweetButton.tag = indexPath.row
+        cell.retweetButton.addTarget(self, action: #selector(self.onRetweet(_:)), for: .touchUpInside)
+        
+        cell.favoriteButton.tag = indexPath.row
+        cell.favoriteButton.addTarget(self, action: #selector(self.onFavorite(_:)), for: .touchUpInside)
         
         
         cell.link = tweet.link
@@ -172,20 +179,77 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 if count < 200 {
                     count += 20
                 }
-                TwitterClient.sharedInstance?.getHomeTimeLine(count: count, success: { (tweets) in
-                    self.tweets = tweets
-                    self.tableView.reloadData()
-                    MBProgressHUD.hide(for: self.view, animated: true)
-                    self.isMoreDataLoading = false
-                }, failure: { (error) in
-                    print(error.localizedDescription)
-                })
+                reload(at: count)
             }
         }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    
+    func onRetweet(_ sender: UIButton) {
+        let cell = tableView.cellForRow(at: IndexPath(row: sender.tag, section: 0)) as! TweetTableViewCell
+        let tweet = tweets[sender.tag]
+        if !tweet.retweeted {
+            TwitterClient.sharedInstance?.retweet(id: (tweet.id)!, success: { (tweet) in
+                cell.retweetCountLabel.text = "\(tweet.retweetCount)"
+                cell.retweetButton.imageView?.tintColor = .green
+                self.tweets[sender.tag].retweetCount = tweet.retweetCount
+                self.tableView.reloadData()
+            }, failure: { (error) in
+                print(error.localizedDescription)
+            })
+        }
+        else {
+            TwitterClient.sharedInstance?.unretweet(id: (tweet.id)!, success: { (tweet) in
+                cell.retweetCountLabel.text = "\(tweet.retweetCount)"
+                cell.retweetButton.imageView?.tintColor = .lightGray
+                self.tweets[sender.tag].retweetCount = tweet.retweetCount
+                self.reload(at: self.count)
+            }, failure: { (error) in
+                print(error.localizedDescription)
+            })
+        }
+    }
+    
+    func onFavorite(_ sender: UIButton) {
+        let cell = tableView.cellForRow(at: IndexPath(row: sender.tag, section: 0)) as! TweetTableViewCell
+        let tweet = tweets[sender.tag]
+        if !tweet.favorited {
+            TwitterClient.sharedInstance?.favorite(id: (tweet.id)!, success: { (tweet) in
+                cell.favoriteButton.imageView?.tintColor = .red
+                cell.favoriteCountLabel.text = "\(tweet.favoritesCount)"
+                self.tweets[sender.tag].favoritesCount = tweet.favoritesCount
+                self.tableView.reloadData()
+            }, failure: { (error) in
+                print(error.localizedDescription)
+                
+            })
+        }
+        else {
+            TwitterClient.sharedInstance?.unfavorite(id: (tweet.id)!, success: { (tweet) in
+                cell.favoriteButton.imageView?.tintColor = .lightGray
+                cell.favoriteCountLabel.text = "\(tweet.favoritesCount)"
+                self.tweets[sender.tag].favoritesCount = tweet.favoritesCount
+                self.tableView.reloadData()
+            }, failure: { (error) in
+                print(error.localizedDescription)
+                
+            })
+        }
+    }
+    
+    func reload(at count: Int) {
+        TwitterClient.sharedInstance?.getHomeTimeLine(count: count, success: { (tweets) in
+            self.tweets = tweets
+            self.tableView.reloadData()
+            MBProgressHUD.hide(for: self.view, animated: true)
+            self.isMoreDataLoading = false
+        }, failure: { (error) in
+            print(error.localizedDescription)
+        })
     }
     
 

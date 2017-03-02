@@ -59,49 +59,6 @@ class TweetTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    @IBAction func onRetweet(_ sender: Any) {
-        if let tweet = tweet {
-            if !tweet.retweeted {
-                TwitterClient.sharedInstance?.retweet(id: (tweet.id)!, success: { (tweet) in
-                    self.retweetCountLabel.text = "\(tweet.retweetCount)"
-                    self.retweetButton.imageView?.tintColor = .green
-                }, failure: { (error) in
-                    print(error.localizedDescription)
-                })
-            }
-            else {
-                TwitterClient.sharedInstance?.unretweet(id: (tweet.id)!, success: { (tweet) in
-                    self.retweetCountLabel.text = "\(tweet.retweetCount)"
-                    self.retweetButton.imageView?.tintColor = .lightGray
-                }, failure: { (error) in
-                    print(error.localizedDescription)
-                })
-            }
-        }
-    }
-    
-    @IBAction func onFavorite(_ sender: Any) {
-        if let tweet = tweet {
-            if !tweet.favorited {
-                TwitterClient.sharedInstance?.favorite(id: (tweet.id)!, success: { (tweet) in
-                    self.favoriteButton.imageView?.tintColor = .red
-                    self.favoriteCountLabel.text = "\(tweet.favoritesCount)"
-                }, failure: { (error) in
-                    print(error.localizedDescription)
-                    
-                })
-            }
-            else {
-                TwitterClient.sharedInstance?.unfavorite(id: (tweet.id)!, success: { (tweet) in
-                    self.favoriteButton.imageView?.tintColor = .lightGray
-                    self.favoriteCountLabel.text = "\(tweet.favoritesCount)"
-                }, failure: { (error) in
-                    print(error.localizedDescription)
-                    
-                })
-            }
-        }
-    }
     
     @IBAction func onLink(_ sender: Any) {
         if let link = self.link {
