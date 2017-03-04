@@ -31,9 +31,20 @@ class TweetTableViewCell: UITableViewCell {
     var second: UIView?
     var third: UIView?
     
+    @IBOutlet weak var extraScreenNameLabel: UILabel!
+    @IBOutlet weak var extraImageView: UIImageView!
+    @IBOutlet weak var cellStackView: UIStackView!
+    
+    var extraView: UIView?
+    var mainView: UIView?
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        extraView = cellStackView.arrangedSubviews[0]
+        mainView = cellStackView.arrangedSubviews[1]
         
         first = stackView.arrangedSubviews[0]
         second = stackView.arrangedSubviews[1]
@@ -50,6 +61,8 @@ class TweetTableViewCell: UITableViewCell {
         tweetImageView.layer.cornerRadius = 5
         tweetImageView.clipsToBounds = true
         tweetImageView.contentMode = .scaleAspectFill
+        
+        extraImageView.tintColor = .lightGray
         
     }
 

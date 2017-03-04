@@ -78,9 +78,16 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath) as! TweetTableViewCell
-        
         let tweet = tweets[indexPath.row]
         
+        if tweet.retweetedUser != nil {
+            cell.extraView?.isHidden = false
+            cell.extraImageView.image = #imageLiteral(resourceName: "iconmonstr-retweet-1-240")
+            cell.extraScreenNameLabel.text = "\(tweet.retweetedUser!) Retweeted"
+        }
+        else {
+            cell.extraView?.isHidden = true
+        }
     
         cell.tweet = tweet
         
