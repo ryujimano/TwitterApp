@@ -49,7 +49,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         avatarView.layer.borderWidth = 3
         avatarView.clipsToBounds = true
         
-        let currentUser = User.currentUser
+        var currentUser = User.currentUser
         
         if user != nil && user != currentUser {
             nameLabel.text = user?.name
@@ -73,6 +73,24 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
         }
         else {
+        TwitterClient.sharedInstance?.getUser(screenName: (currentUser?.screenName)!, success: { (user) in
+            self.nameLabel.text = user.name
+            self.headerLabel.text = user.name
+            self.screennameLabel.text = "@\((currentUser?.screenName)!)"
+            
+            TwitterClient.sharedInstance?.getUserTimeLine(screenName: (currentUser?.screenName)!, success: { (tweets) in
+                self.userTimeline = tweets
+                self.tableView.reloadData()
+            }, failure: { (error) in
+                print(error.localizedDescription)
+            })
+            self.descriptionLabel.text = user.tagline
+            self.followingCountLabel.text = "\(user.followingCount ?? 0)"
+            self.followersCountLabel.text = "\(user.followersCount ?? 0)"
+            self.tweetsCountLabel.text = "\(user.tweetCount ?? 0)"
+        }, failure: { (error) in
+            print(error.localizedDescription)
+        })
         if name == nil {
             nameLabel.text = currentUser?.name
             headerLabel.text = currentUser?.name
@@ -124,9 +142,7 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
 //            followersCountLabel.text = "\(followersCount ?? 0)"
 //        }
         
-        if tweetsCountLabel == nil {
             tweetsCountLabel.text = "\(currentUser?.tweetCount ?? 0)"
-        }
 //        else {
 //            tweetsCountLabel.text = "\(tweetsCount ?? 0)"
 //        }
