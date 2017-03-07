@@ -66,26 +66,26 @@ Implementing StackView to the app was challenging. Issues with retweeting/favori
 
 # Project 5 - *TwitterApp (Part 2)*
 
-Time spent: **X** hours spent in total
+Time spent: **16** hours spent in total
 
 ## User Stories
 
 The following **required** functionality is completed:
 
-- [ ] Tweet Details Page: User can tap on a tweet to view it, with controls to retweet, favorite, and reply.
-- [ ] Profile page:
-   - [ ] Contains the user header view
-   - [ ] Contains a section with the users basic stats: # tweets, # following, # followers
-- [ ] Home Timeline: Tapping on a user image should bring up that user's profile page
-- [ ] Compose Page: User can compose a new tweet by tapping on a compose button.
+- [X] Tweet Details Page: User can tap on a tweet to view it, with controls to retweet, favorite, and reply.
+- [X] Profile page:
+   - [X] Contains the user header view
+   - [X] Contains a section with the users basic stats: # tweets, # following, # followers
+- [X] Home Timeline: Tapping on a user image should bring up that user's profile page
+- [X] Compose Page: User can compose a new tweet by tapping on a compose button.
 
 The following **optional** features are implemented:
 
-- [ ] When composing, you should have a countdown in the upper right for the tweet limit.
-- [ ] After creating a new tweet, a user should be able to view it in the timeline immediately without refetching the timeline from the network.
-- [ ] Profile Page
+- [X] When composing, you should have a countdown in the upper right for the tweet limit.
+- [X] After creating a new tweet, a user should be able to view it in the timeline immediately without refetching the timeline from the network.
+- [X] Profile Page
    - [ ] Implement the paging view for the user description.
-   - [ ] As the paging view moves, increase the opacity of the background screen. See the actual Twitter app for this effect
+   - [X] As the paging view moves, increase the opacity of the background screen. See the actual Twitter app for this effect
    - [ ] Pulling down the profile page should blur and resize the header image.
 - [ ] Account switching
    - [ ] Long press on tab bar to bring up Account view with animation
@@ -96,23 +96,25 @@ The following **optional** features are implemented:
 The following **additional** features are implemented:
 
 - [X] Add Retweet view on tweet cells
+- [X] Add username animation by scrolling on the profile page
+- [X] Implement limit to the text view so user does not exceed 140 characters.
+- [X] Automatically add the user's screen name when replying.
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
-1. 
-2. 
+1. Better ways to implement required components
+2. Adding account switching
 
 ## Video Walkthrough 
 
 Here's a walkthrough of implemented user stories:
 
-
+![alt text] (https://github.com/ryujimano/TwitterApp/blob/master/TwitterDemo2.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
-
-Describe any challenges encountered while building the app.
+Overall, this part of the project was challenging. Adding several new components to the app such as replying and showing user profile views were challenging.
 
 ## License
 
