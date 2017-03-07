@@ -9,6 +9,10 @@
 import UIKit
 
 class ProfileViewController: UIViewController {
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var headerView: UIView!
+    @IBOutlet weak var headerImageView: UIImageView!
+    @IBOutlet weak var headerLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
