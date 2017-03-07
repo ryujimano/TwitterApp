@@ -36,10 +36,13 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
     var backgroundURL: URL?
     
     var userTimeline: [Tweet]?
+
+    var user: User?
     
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(true)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
         
         avatarView.layer.cornerRadius = 10
         avatarView.layer.borderColor = UIColor.white.cgColor
@@ -48,14 +51,36 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         let currentUser = User.currentUser
         
+        if user != nil && user != currentUser {
+            nameLabel.text = user?.name
+            headerLabel.text = user?.name
+            screennameLabel.text = user?.screenName
+            TwitterClient.sharedInstance?.getUserTimeLine(screenName: (user?.screenName)!, success: { (tweets) in
+                self.userTimeline = tweets
+                self.tableView.reloadData()
+            }, failure: { (error) in
+                print(error.localizedDescription)
+            })
+            descriptionLabel.text = user?.tagline
+            followingCountLabel.text = "\(user?.followingCount ?? 0)"
+            followersCountLabel.text = "\(user?.followersCount ?? 0)"
+            tweetsCountLabel.text = "\(user?.tweetCount ?? 0)"
+            if let url = user?.profileImageURL {
+                avatarView.setImageWith(url)
+            }
+            if let url = user?.backgroundImageURL {
+                headerImageView.setImageWith(url)
+            }
+        }
+        else {
         if name == nil {
             nameLabel.text = currentUser?.name
             headerLabel.text = currentUser?.name
         }
-        else {
-            nameLabel.text = name
-            headerLabel.text = name
-        }
+//        else {
+//            nameLabel.text = name
+//            headerLabel.text = name
+//        }
         
         if screenName == nil {
             screennameLabel.text = "@\((currentUser?.screenName)!)"
@@ -67,65 +92,66 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
                 print(error.localizedDescription)
             })
         }
-        else {
-            screennameLabel.text = screenName
-            
-            TwitterClient.sharedInstance?.getUserTimeLine(screenName: screenName!, success: { (tweets) in
-                self.userTimeline = tweets
-                self.tableView.reloadData()
-            }, failure: { (error) in
-                print(error.localizedDescription)
-            })
-        }
+//        else {
+//            screennameLabel.text = screenName
+//            
+//            TwitterClient.sharedInstance?.getUserTimeLine(screenName: screenName!, success: { (tweets) in
+//                self.userTimeline = tweets
+//                self.tableView.reloadData()
+//            }, failure: { (error) in
+//                print(error.localizedDescription)
+//            })
+//        }
         
         if desc == nil {
             descriptionLabel.text = currentUser?.tagline
         }
-        else {
-            descriptionLabel.text = desc
-        }
+//        else {
+//            descriptionLabel.text = desc
+//        }
         
         if followingCount == nil {
             followingCountLabel.text = "\(currentUser?.followingCount ?? 0)"
         }
-        else {
-            followingCountLabel.text = "\(followingCount ?? 0)"
-        }
+//        else {
+//            followingCountLabel.text = "\(followingCount ?? 0)"
+//        }
         
         if followersCount == nil {
             followersCountLabel.text = "\(currentUser?.followersCount ?? 0)"
         }
-        else {
-            followersCountLabel.text = "\(followersCount ?? 0)"
-        }
+//        else {
+//            followersCountLabel.text = "\(followersCount ?? 0)"
+//        }
         
         if tweetsCountLabel == nil {
             tweetsCountLabel.text = "\(currentUser?.tweetCount ?? 0)"
         }
-        else {
-            tweetsCountLabel.text = "\(tweetsCount ?? 0)"
-        }
+//        else {
+//            tweetsCountLabel.text = "\(tweetsCount ?? 0)"
+//        }
         
         if imageURL == nil && name != currentUser?.name {
             if let url = currentUser?.profileImageURL {
                 avatarView.setImageWith(url)
             }
         }
-        else {
-            if let url = imageURL {
-                avatarView.setImageWith(url)
-            }
-        }
+//        else {
+//            if let url = imageURL {
+//                avatarView.setImageWith(url)
+//            }
+//        }
         
         if backgroundURL == nil && name != currentUser?.name {
             if let url = currentUser?.backgroundImageURL {
                 headerImageView.setImageWith(url)
             }
         }
-        else {
-            if let url = backgroundURL {
-                headerImageView.setImageWith(url)
-            }
+//        else {
+//            if let url = backgroundURL {
+//                headerImageView.setImageWith(url)
+//            }
+//        }
         }
 
     }
@@ -137,6 +163,9 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         tableView.delegate = self
         tableView.dataSource = self
+        
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 100
         
     }
 

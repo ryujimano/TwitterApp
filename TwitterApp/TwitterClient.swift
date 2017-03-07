@@ -127,5 +127,45 @@ class TwitterClient: BDBOAuth1SessionManager {
             failure(error)
         }
     }
-
+    
+    func getReplies(id: String, success: @escaping (Tweet)->(), failure: @escaping (Error)->()) {
+        get("1.1/statuses/show.json?id=\(id)", parameters: nil, progress: nil, success: { (task, response) in
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet.init(dictionary: dictionary)
+            success(tweet)
+        }) { (task, error) in
+            failure(error)
+        }
+    }
+    
+    func postTweet(text: String, success: @escaping (Tweet)->(), failure: @escaping (Error)->()) {
+        post("1.1/statuses/update.json", parameters: ["status": text], progress: nil, success: { (task, response) in
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet.init(dictionary: dictionary)
+            success(tweet)
+        }) { (task, error) in
+            failure(error)
+        }
+    }
+    
+    func postReply(text: String, id: String, success: @escaping (Tweet)->(), failure: @escaping (Error)->()) {
+        post("1.1/statuses/update.json", parameters: ["status": text, "in_reply_to_status_id": id], progress: nil, success: { (task, response) in
+            let dictionary = response as! NSDictionary
+            let tweet = Tweet.init(dictionary: dictionary)
+            success(tweet)
+        }) { (task, error) in
+            failure(error)
+        }
+    }
+    
+    func getUser(screenName: String, success: @escaping (User)->(), failure: @escaping (Error)->()) {
+        get("1.1/users/lookup.json?screen_name=\(screenName)", parameters: nil, progress: nil, success: { (task, response) in
+            let dictionaries = response as! [NSDictionary]
+            let dictionary = dictionaries[0]
+            let user = User.init(dictionary: dictionary)
+            success(user)
+        }) { (task, error) in
+            failure(error)
+        }
+    }
 }

@@ -10,9 +10,10 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, TweetDelegate {
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet var tapRecognizer: UITapGestureRecognizer!
     var tweets: [Tweet] = []
     var count = 20
     var isMoreDataLoading = false
@@ -41,6 +42,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(self.refresh(refreshControl:)), for: .valueChanged)
         tableView.insertSubview(refreshControl, at: 0)
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -68,6 +70,8 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath) as! TweetTableViewCell
         let tweet = tweets[indexPath.row]
+        
+        
         
         if tweet.retweetedUser != nil {
             cell.extraView?.isHidden = false
@@ -155,6 +159,11 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         else {
             cell.dateLabel.text = "・\(secondsBetween / 86400)d"
         }
+        
+        cell.profileButton.tag = indexPath.row
+        cell.profileButton.addTarget(self, action: #selector(self.getUser(sender:)), for: .touchUpInside)
+//        self.tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.getUser(sender:)))
+//        cell.profileView.addGestureRecognizer(self.tapRecognizer)
         
         return cell
     }
@@ -260,8 +269,28 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if sender is TweetTableViewCell {
             let cell = sender as! TweetTableViewCell
+            let indexPath = tableView.indexPath(for: cell)
+            let destination = segue.destination as! TweetDetailViewController
+            
+            destination.tweet = tweets[(indexPath?.row)!]
         }
     }
     
+    func postTweet(tweet: Tweet) {
+        tweets.insert(tweet, at: 0)
+    }
+    
+    func getUser(sender: UIButton) {
+        
+        
+        let vc = storyboard?.instantiateViewController(withIdentifier: "userView") as! ProfileViewController
+        TwitterClient.sharedInstance?.getUser(screenName: tweets[sender.tag].screenName!, success: { (user) in
+            vc.user = user
+            self.navigationController?.pushViewController(vc, animated: true)
+        }, failure: { (error) in
+            print(error.localizedDescription)
+        })
+        
+    }
 
 }
