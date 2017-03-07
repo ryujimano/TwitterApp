@@ -20,7 +20,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         if let user = User.currentUser {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "TweetsNavigationController")
+            let viewController = storyboard.instantiateViewController(withIdentifier: "TweetsTabBar")
+            
+            let navController = storyboard.instantiateViewController(withIdentifier: "TweetsNavigationController") as! UINavigationController
+            navController.navigationBar.barTintColor = .white
+            navController.navigationBar.backgroundColor = .white
+            
+//            let rect = CGRect(x: 0, y: 0, width: 45, height: 45)
+//            UIGraphicsBeginImageContext(rect.size)
+//            #imageLiteral(resourceName: "Twitter_Logo_Blue").draw(in: rect)
+//            let twitterImage = UIGraphicsGetImageFromCurrentImageContext()
+//            UIGraphicsEndImageContext()
+//            
+//            let twitterView = UIImageView(image: twitterImage)
+//            navController.navigationItem.titleView = twitterView
+            
             window?.rootViewController = viewController
         }
         

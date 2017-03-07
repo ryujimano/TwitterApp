@@ -37,17 +37,6 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 320
         
-        navigationController?.navigationBar.barTintColor = .white
-        navigationController?.navigationBar.backgroundColor = .white
-        
-        let rect = CGRect(x: 0, y: 0, width: 45, height: 45)
-        UIGraphicsBeginImageContext(rect.size)
-        #imageLiteral(resourceName: "Twitter_Logo_Blue").draw(in: rect)
-        let twitterImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        let twitterView = UIImageView(image: twitterImage)
-        navigationItem.titleView = twitterView
         
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(self.refresh(refreshControl:)), for: .valueChanged)
@@ -119,9 +108,6 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         cell.stackView.layer.borderWidth = 1
         cell.stackView.layer.borderColor = UIColor.lightGray.cgColor
-//        let regex = try! NSRegularExpression(pattern: "http\\S+",options: [])
-//        let range = NSMakeRange(0, tweet.text?.characters.count ?? 0)
-//        let text = regex.stringByReplacingMatches(in: tweet.text ?? "", options: [], range: range, withTemplate: "")
         cell.tweetLabel.text = tweet.text
         
         cell.nameLabel.text = tweet.name

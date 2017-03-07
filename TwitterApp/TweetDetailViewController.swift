@@ -8,12 +8,16 @@
 
 import UIKit
 
-class TweetDetailViewController: UIViewController {
+class TweetDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
+    @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
     }
 
     override func didReceiveMemoryWarning() {
